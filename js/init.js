@@ -26,27 +26,23 @@
   };
 
 
-  if($.smConfig.showPageLoadingIndicator) {
-    //这里的 以 push 开头的是私有事件，不要用
-    $(window).on("pageLoadStart", function() {
-      $.showIndicator();
-    });
-    $(document).on("pageAnimationStart", function() {
-      $.hideIndicator();
-    });
-    $(window).on("pageLoadCancel", function() {
-      $.hideIndicator();
-    });
-    $(window).on("pageLoadError", function() {
-      $.hideIndicator();
-      $.toast("加载失败");
-    });
-  }
+  //这里的 以 push 开头的是私有事件，不要用
+  $(window).on("pageLoadStart", function() {
+    $.smConfig.showPageLoadingIndicator && $.showIndicator();
+  });
+  $(document).on("pageAnimationStart", function() {
+    $.smConfig.showPageLoadingIndicator && $.hideIndicator();
+  });
+  $(window).on("pageLoadCancel", function() {
+    $.smConfig.showPageLoadingIndicator && $.hideIndicator();
+  });
+  $(window).on("pageLoadError", function() {
+    $.smConfig.showPageLoadingIndicator && $.hideIndicator();
+    $.toast("加载失败");
+  });
 
-
-
-  $.init = function() {
-    var $page = getPage();
+  $.init = function(page) {
+    var $page = page || getPage();
     var id = $page[0].id;
     if($page.hasClass("page-inited")) {
       $page.trigger("pageReinit", [id, $page]);
@@ -63,7 +59,7 @@
     }
 
     $(document).on("pageInitInternal", function(e, id, $page) {
-      $.init();
+      $.init($page);
     });
   });
 
