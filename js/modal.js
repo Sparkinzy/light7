@@ -622,7 +622,7 @@
       modalCloseByOutside: true,
       actionsCloseByOutside: false,
       popupCloseByOutside: true,
-      closePrevious: true  //close all previous modal before open
+      closePrevious: false //close all previous modal before open
     };
 
     $(function() {
