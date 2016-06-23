@@ -129,7 +129,7 @@
       this[replace || reload ? "replaceState" : "pushState"](url, id);
 
       this.forwardStack  = [];  //clear forward stack
-      
+
       this.animatePages(this.getCurrentPage(), page, null, noAnimation);
     });
   }
@@ -329,8 +329,38 @@
 
     var $page = tmp.find(".page");
     if(!$page[0]) $page = tmp.addClass("page");
+    // 查找远程页面上的js文件或js代码，并执行
+    this.execScript(tmp);
     return [$page, $extra];
   }
+
+  // 执行异步加载script文件
+  Router.prototype.execScript = function($dom){
+        // 执行新加载的js,开发者判断是否为新的js代码!以免重复加载！比较别捏的解决方法！
+        var $scripts = $dom.find('script.new');
+        if ($scripts.length>0) {
+            $scripts.each(function(index, el) {
+                var script_file = $(el).prop('src');
+                if(script_file.length>0){
+                    $.getScript(script_file);
+                }else{
+                    var code = $(el).html();
+                    try {
+                        //执行脚本
+                        if (!!(window.attachEvent && !window.opera)) {
+                        //ie
+                            execScript(code);
+                        } else {
+                        //not ie
+                            window.eval(code);
+                        }
+                    } catch (e) {
+
+                    }
+                }
+            });
+        }
+  };
 
   Router.prototype.genStateID = function() {
     var id = parseInt(this.state.getItem("stateid")) + 1;
